@@ -1,0 +1,42 @@
+.otherUser{
+    background-color: #DCDCDC;
+    border-style: none;
+    border-radius: 5px;
+    padding: 2px 2px 2px 2px
+}
+.selfUser{
+    background-color: #00F040;
+    border-style: none;
+    border-radius: 5px;
+    padding: 2px 2px 2px 2px
+}
+.container{
+    margin: 0 auto;
+    padding-left: 10%;
+    width: 30%;
+    
+}
+
+#chatText{
+    max-width: 50%;
+    border-style: groove;
+    border-color: black;
+    border-radius: 10px;
+    padding: 5px 5px 5px 5px 
+}
+
+#rooms{
+    margin: 0 auto;
+}
+
+#roomID{
+    height: 25px;
+    width: 50%;
+
+}
+
+#editor{
+    overflow: hidden;
+    height: 50px;
+    width: 50%;
+}

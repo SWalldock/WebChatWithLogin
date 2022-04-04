@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Steven's Webchat</title>
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <script src="/socket.io/socket.io.js"></script>
+   <script>
+      //Name of the current room
+      var currentRoom = 'DefaultRoom';
+      //socket
+      var socket = io();
+
+      const username = {user}
+
+      
+      //event from server socket we are listening for
+      //copies the text data to the editor text area
+      socket.on('copyEvent',function(data){
+               console.log(data)
+               document.getElementById('chatText').innerHTML += `<p class="otherUser"><b>`+data['person']+`: </b>`+ data.message + '</p>';
+      });
+
+      socket.on('newUser',(messages)=>{
+         if(!messages)return;
+         //if joining a room with messages highlight messages sent by a person with the same username as the user by the user
+         for(let i = 0; i < messages.length; i++){
+            if(messages[i]['person']===username){
+               document.getElementById('chatText').innerHTML += '<p class="selfUser"><b>'+ messages[i]['person']+': </b>'+messages[i].message + '</p>';
+            }else{
+               document.getElementById('chatText').innerHTML += '<p class="otherUser"><b>'+ messages[i]['person']+': </b>'+messages[i].message + '</p>';
+            }
+            
+         }
+      })
+
+      function sendData()
+         {  
+            //Get the text data from the editor textarea
+            var newText = document.getElementById('editor').value;
+            console.log('Username:',username)
+            //if there is nothing in the textarea do nothing
+            if(!newText){
+               console.log('Think tank')
+               return
+            }
+            //copy the chat text
+            var chatText = document.getElementById('chatText').innerHTML;
+            //Assign the text data to the copy textarea
+            //newText= newText + '<p>'+ chatText + '</p>'
+            document.getElementById('chatText').innerHTML += `<p class="selfUser"><b>${username}: </b>`+ newText + '</p>';
+            console.log(newText)
+            //clear editor area
+            document.getElementById('editor').value = "";
+            //send the new text copy through the server using custom event: 'copyEvent'
+            socket.emit('copyEvent', {person:username,message:newText});
+            }
+      function changeRoom(){
+         if(document.getElementById('roomID').value === currentRoom){
+            return
+         }
+         socket.emit('roomChange', {newRoom:document.getElementById('roomID').value, oldRoom:currentRoom});
+         //Sets value of the current room to the roodID textarea
+         document.getElementById('chatText').innerHTML = ''
+         currentRoom = document.getElementById('roomID').value
+      }
+   </script>
+<body>
+   <div class="container">
+      <div id="rooms">
+         <h2>Room ID</h2>
+         <textarea id="roomID"></textarea><br>
+         <button onclick="changeRoom()">Submit</button>
+      </div>
+
+      <h2>Chat History</h2>
+      <div id='chatText'></div>
+      <h2>Editor</h2>
+         <textarea id="editor" onkeyup="autoheight(this)"></textarea><br>
+         <script>
+            function autoheight(x) {
+              x.style.height = "5px";
+              x.style.height = (15+x.scrollHeight)+"px";
+            }
+          </script>
+         <button onclick="sendData()">Submit</button>
+
+      <script>document.getElementById('roomID').value = ""</script>
+      <p><a href="/logout">Logout</a></p>
+   </div>
+   </body></html>
